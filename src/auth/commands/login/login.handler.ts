@@ -4,6 +4,7 @@ import { LoginCommand } from './login.command';
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import * as process from 'node:process';
 
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
@@ -21,8 +22,9 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     }
 
     const payload = { sub: user.id, email: user.email };
-    const token = this.jwtService.sign(payload);
-
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+    });
     return { accessToken: token };
   }
 }
